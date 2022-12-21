@@ -5,14 +5,14 @@ entity lcd_tx_fsm is
     port(
         clk : in std_logic;
         rst : in std_logic;
-        byte_in : in std_logic_vector(0 to 7);  -- Data to send
-        stb : in std_logic;                     -- Strobe to initiate the transfer
-        rs : in std_logic;                      -- Indicate command or data
-        rdy : out std_logic;                    -- Ready for initiate a transfer
-        lcd_rs : out std_logic;                 -- RS signal of the LCD
-        lcd_en : out std_logic;                 -- Enable pulse
-        lcd_rw : out std_logic;                 -- W/R signal of the LCD
-        lcd_data: out std_logic_vector(0 to 7)  -- Data signal of the LCD
+        byte_in : in std_logic_vector(0 to 7);  -- Entrada de datos para enviar
+        stb : in std_logic;                     -- Strobe para iniciar el envio a la LCD
+        rs : in std_logic;                      -- Indica si la informacion es un comando o un dato
+        rdy : out std_logic;                    -- Ready indica que el modulo esta listo para iniciar una nueva transmision
+        lcd_rs : out std_logic;                 -- Conectar a la entrada RS de la LCD
+        lcd_en : out std_logic;                 -- Conectar a la entrada EN de la LCD
+        lcd_rw : out std_logic;                 -- Conectar a la entrada W/R de la LCD
+        lcd_data: out std_logic_vector(0 to 7)  -- Conectar a la entrada DATA de la LCD
     );
 end lcd_tx_fsm;
 
@@ -22,11 +22,12 @@ type lcd_tx_state is (IDLE, INIT_TX, EN_TX, WAIT_230N, FINISH_TX, WAIT_40U);
 
 signal lcd_tx_current_state : lcd_tx_state;
 signal lcd_tx_next_state : lcd_tx_state;
-signal count_reg, count_next : integer;
-signal data_reg, data_next : std_logic_vector(0 to 7);
+signal count_reg, count_next : integer;     -- Señal para conteo de tiempo
+signal data_reg, data_next : std_logic_vector(0 to 7);      -- Esta señal es un registro que guarda el dato a enviar cuando se da un pulso en stb
+                                                            -- por lo tanto es posible retirar el dato de la entrada byte_in
 
 begin
-    -- Transition logic
+    -- Logica de transicion
     process(clk, rst)
     begin
         if rst = '1' then
@@ -39,7 +40,7 @@ begin
         end if;
     end process;
 
-    -- Next state logic
+    -- Circuito del proximo estado
     process(lcd_tx_current_state, stb, rs, count_reg, byte_in)
     begin
     lcd_tx_next_state <= lcd_tx_current_state;
@@ -81,7 +82,7 @@ begin
     lcd_en <= '1' when lcd_tx_current_state = WAIT_230N else '0';
     lcd_data <= data_reg;
     lcd_rs <= rs;
-    lcd_rw <= '0';
+    lcd_rw <= '0';      -- Por defecto se realizan operaciones de escritura en la LCD
     rdy <= '1' when lcd_tx_current_state = IDLE else '0';
 
 end architecture;

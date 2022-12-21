@@ -22,14 +22,14 @@ component lcd_tx_fsm is
     port(
         clk : in std_logic;
         rst : in std_logic;
-        byte_in : in std_logic_vector(0 to 7);  -- Data to send
-        stb : in std_logic;                     -- Strobe to initiate the transfer
-        rs : in std_logic;                      -- Indicate command or data
-        rdy : out std_logic;                    -- Ready for initiate a transfer
-        lcd_rs : out std_logic;                 -- RS signal of the LCD
-        lcd_en : out std_logic;                 -- Enable pulse
-        lcd_rw : out std_logic;                 -- W/R signal of the LCD
-        lcd_data: out std_logic_vector(0 to 7)  -- Data signal of the LCD
+        byte_in : in std_logic_vector(0 to 7);  
+        stb : in std_logic;                     
+        rs : in std_logic;                      
+        rdy : out std_logic;                    
+        lcd_rs : out std_logic;                 
+        lcd_en : out std_logic;                 
+        lcd_rw : out std_logic;                 
+        lcd_data: out std_logic_vector(0 to 7)  
     );
 end component;
 
